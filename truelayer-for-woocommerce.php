@@ -115,7 +115,6 @@ if ( ! class_exists( 'TrueLayer_For_WooCommerce' ) ) {
 				return;
 			}
 
-
 			load_plugin_textdomain( 'truelayer-for-woocommerce', false, plugin_basename( __DIR__ ) . '/languages' );
 			add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'plugin_action_links' ) );
 			$this->include_files();
@@ -162,7 +161,7 @@ if ( ! class_exists( 'TrueLayer_For_WooCommerce' ) ) {
 						<?php echo esc_html__( 'Your installation of TrueLayer for WooCommerce is not complete. If you installed this plugin directly from Github please refer to the readme.dev.txt file in the plugin.', 'truelayer-for-woocommerce' ); ?>
 					</p>
 				</div>
-				<?php
+					<?php
 				}
 			);
 		}
@@ -246,10 +245,20 @@ if ( ! class_exists( 'TrueLayer_For_WooCommerce' ) ) {
 			$this->api     = new Truelayer_API();
 			$this->install = new TrueLayer_Install();
 		}
-
 	}
 	TrueLayer_For_WooCommerce::get_instance();
 }
+
+// declare hpos compatibility
+add_action(
+	'before_woocommerce_init',
+	function () {
+		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+		}
+	}
+);
+
 
 /**
  * Main instance TrueLayer_For_WooCommerce.
