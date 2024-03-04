@@ -89,7 +89,7 @@ class TrueLayer_Callbacks {
 					break;
 				default:
 					$status   = $body['type'];
-					$order = $this->get_woocommerce_order_from_payment_id( $body['payment_id'] );
+					$order    = $this->get_woocommerce_order_from_payment_id( $body['payment_id'] );
 					$order_id = is_object( $order ) ? $order->get_id() : '';
 					TrueLayer_Logger::log( "Unhandled callback for order {$order_id}. Callback type: {$status}" );
 					break;
@@ -171,8 +171,10 @@ class TrueLayer_Callbacks {
 		if ( isset( $body['payment_source']['id'] ) ) {
 			$payment_source_id = sanitize_text_field( $body['payment_source']['id'] );
 			$payment_user_id   = sanitize_text_field( $body['user_id'] );
-			update_post_meta( $order->get_id(), '_truelayer_payment_source_id', $payment_source_id );
-			update_post_meta( $order->get_id(), '_truelayer_payment_user_id', $payment_user_id );
+			$order->update_meta_data( '_truelayer_payment_source_id', $payment_source_id );
+			$order->update_meta_data( '_truelayer_payment_user_id', $payment_user_id );
+			$order->save();
+
 			/* Translators: TrueLayer payment source id and payment user id returned in payment settled callback. */
 			$order->add_order_note( sprintf( __( 'TrueLayer payment settled. Payment source id: %1$s. Payment user id: %2$s.', 'truelayer-for-woocommerce' ), $payment_source_id, $payment_user_id ) );
 		}
@@ -248,7 +250,9 @@ class TrueLayer_Callbacks {
 		// Success handling.
 		if ( isset( $body['payout_id'] ) ) {
 			$payout_id = sanitize_text_field( $body['payout_id'] );
-			update_post_meta( $order->get_id(), '_truelayer_payout_id', $payout_id );
+			$order->update_meta_data( '_truelayer_payout_id', $payout_id );
+			$order->save();
+
 			/* Translators: TrueLayer payment source id and payment user id returned in payment settled callback. */
 			$order->add_order_note( sprintf( __( 'TrueLayer payout executed. Payout id: %1$s.', 'truelayer-for-woocommerce' ), $payout_id ) );
 		}
@@ -312,7 +316,9 @@ class TrueLayer_Callbacks {
 		// Success handling.
 		if ( isset( $body['refund_id'] ) ) {
 			$refund_id = sanitize_text_field( $body['refund_id'] );
-			update_post_meta( $order->get_id(), '_truelayer_refund_id', $refund_id );
+			$order->update_meta_data( '_truelayer_refund_id', $refund_id );
+			$order->save();
+
 			/* Translators: TrueLayer payment source id and payment user id returned in payment settled callback. */
 			$order->add_order_note( sprintf( __( 'TrueLayer refund executed. Refund id: %1$s.', 'truelayer-for-woocommerce' ), $refund_id ) );
 		}
@@ -451,5 +457,5 @@ class TrueLayer_Callbacks {
 		$order_id = $orders[0];
 		return wc_get_order( $order_id );
 	}
-
-} new TrueLayer_Callbacks();
+}
+new TrueLayer_Callbacks();
