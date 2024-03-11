@@ -28,13 +28,6 @@ class TrueLayer_Payment_Gateway extends WC_Payment_Gateway {
 	public $testmode;
 
 	/**
-	 * The plugin logging setting value.
-	 *
-	 * @var string
-	 */
-	public $logging;
-
-	/**
 	 * Class constructor.
 	 */
 	public function __construct() {
@@ -56,7 +49,6 @@ class TrueLayer_Payment_Gateway extends WC_Payment_Gateway {
 		$this->description = $this->get_option( 'description' );
 
 		$this->testmode = $this->get_option( 'testmode' );
-		$this->logging  = $this->get_option( 'logging' );
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( &$this, 'process_admin_options' ) );
 		add_action(
@@ -77,32 +69,19 @@ class TrueLayer_Payment_Gateway extends WC_Payment_Gateway {
 	 * @return string
 	 */
 	public function get_option( $key, $empty_value = null ) {
-		$settings = get_option( 'woocommerce_truelayer_settings', array() );
-		if ( empty( $settings ) ) {
-			return '';
-		}
-		if ( 'yes' === $this->testmode ) {
-			$private_key        = 'truelayer_sandbox_client_private_key';
-			$client_secret      = 'truelayer_sandbox_client_secret';
-			$client_certificate = 'truelayer_sandbox_client_certificate';
-		} else {
-			$private_key        = 'truelayer_client_private_key';
-			$client_secret      = 'truelayer_client_secret';
-			$client_certificate = 'truelayer_client_certificate';
-		}
-		$truelayer_options    = array( $private_key, $client_secret, $client_certificate );
-		$truelayer_encryption = Truelayer_Encryption::get_instance();
-		if ( ! empty( $settings[ $key ] ) ) {
-			if ( in_array( $key, $truelayer_options, true ) ) {
-				try {
-					return $truelayer_encryption->decrypt( $settings[ $key ] );
-				} catch ( \Defuse\Crypto\Exception\EnvironmentIsBrokenException | \Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException $e ) {
-					return $settings[ $key ];
-				}
-			}
+		// Get the original value from the parent method.
+		$parent_value = parent::get_option( $key, $empty_value );
+
+		// If the current key is not one that is encrypted, then just return the parent value.
+		if ( ! TruelayerEncryption()->is_encrypted_key( $key ) ) {
+			return $parent_value;
 		}
 
-		return parent::get_option( $key, $empty_value ); // call parent implementation.
+		// Attempt to get the decrypted value.
+		$decrypted_value = TruelayerEncryption()->decrypt_value( $key, $parent_value );
+
+		// If the decrypted value is empty, then return an empty string to prevent issues from re-encrypting an already encrypted value.
+		return $decrypted_value ?? '';
 	}
 
 	/**
@@ -111,7 +90,6 @@ class TrueLayer_Payment_Gateway extends WC_Payment_Gateway {
 	 * @return string
 	 */
 	public function get_icon() {
-
 		$icon_src   = TRUELAYER_WC_PLUGIN_URL . '/assets/images/icon-instant-bank-transfer.svg';
 		$icon_width = '25';
 		$icon_html  = '<img src="' . $icon_src . '" alt="TrueLayer" style="max-width:' . $icon_width . 'px"/>';
@@ -119,7 +97,7 @@ class TrueLayer_Payment_Gateway extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Initialise settings fields.
+	 * Initialize settings fields.
 	 */
 	public function init_form_fields() {
 		$this->form_fields = TrueLayer_Fields::fields();
@@ -276,16 +254,16 @@ class TrueLayer_Payment_Gateway extends WC_Payment_Gateway {
 			<!-- Admin settings fields -->
 			<div id="truelayer-main">
 				<table class="form-table">
-					<?php $this->generate_settings_html(); ?>
+			<?php $this->generate_settings_html(); ?>
 				</table>
 			</div>
 			<div id="krokdocs-sidebar">
 				<?php echo wp_kses_post( WC_TrueLayer_Banners::settings_sidebar() ); ?>
 			</div>
-		</div>
-		<!-- Save button separator -->
-		<div class="save-separator"></div>
-		<?php
+			</div>
+			<!-- Save button separator -->
+			<div class="save-separator"></div>
+			<?php
 	}
 
 }
