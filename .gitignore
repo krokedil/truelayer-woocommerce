@@ -14,8 +14,11 @@ project.properties
 
 node_modules/
 vendor
-
+/vendor-bin/**/vendor/
 .phpunit.result.cache
+
+dependencies/*
+!dependencies/.gitkeep
 
 # OS X metadata
 .DS_Store
