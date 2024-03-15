@@ -212,14 +212,11 @@ if ( ! class_exists( 'TrueLayer_For_WooCommerce' ) ) {
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/class-truelayer-fields.php';
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/class-truelayer-gateway.php';
 
+			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/psr/class-truelayer-http-client.php';
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/class-truelayer-request.php';
-			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/class-truelayer-request-post.php';
-			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/class-truelayer-request-get.php';
-			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/post/class-truelayer-request-get-token.php';
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/post/class-truelayer-request-create-payment.php';
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/get/class-truelayer-request-get-payment-status.php';
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/get/class-truelayer-get-merchant-accounts.php';
-
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/order_management/class-truelayer-request-refunds.php';
 
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/helpers/class-truelayer-helper-order.php';
