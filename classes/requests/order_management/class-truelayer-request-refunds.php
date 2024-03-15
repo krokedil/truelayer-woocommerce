@@ -5,10 +5,13 @@
  * @package TrueLayer_For_WooCommerce/Classes/Requests/Order_Management
  */
 
+use Krokedil_TrueLayer_Dependencies\TrueLayer\Interfaces\Payment\RefundCreatedInterface;
+use Krokedil_TrueLayer_Dependencies\TrueLayer\Interfaces\Payment\RefundFailedInterface;
+
 /**
  * Class TrueLayer_Request_Refunds
  */
-class TrueLayer_Request_Refunds extends TrueLayer_Request_Post {
+class TrueLayer_Request_Refunds extends TrueLayer_Request {
 
 	/**
 	 * WooCommerce Order ID
@@ -18,80 +21,79 @@ class TrueLayer_Request_Refunds extends TrueLayer_Request_Post {
 	public $order_id;
 
 	/**
+	 * The WooCommerce order.
+	 *
+	 * @var WC_Order
+	 */
+	public $order;
+
+	/**
+	 * The amount to be refunded.
+	 *
+	 * @var int
+	 */
+	public $amount;
+
+	/**
+	 * The refund reason.
+	 *
+	 * @var string
+	 */
+	public $reason;
+
+	/**
 	 * Class constructor.
 	 *
 	 * @param array $arguments the class constructor arguments array.
 	 */
 	public function __construct( $arguments ) {
 		parent::__construct( $arguments );
-		$this->order_id        = $arguments['order_id'];
-		$this->order           = wc_get_order( $this->order_id );
-		$this->log_title       = 'Refund payment';
-		$this->endpoint        = '/payments/' . $this->order->get_transaction_id() . '/refunds';
-		$this->idempotency_key = Truelayer_Helper_Signing::get_uuid();
+		$this->order_id  = $arguments['order_id'];
+		$this->order     = wc_get_order( $this->order_id );
+		$this->log_title = 'Refund payment';
 
-		$this->amount = round( $arguments['amount'] * 100 );
-		$this->reason = $arguments['reason'];
+		$this->amount = intval( round( $arguments['amount'] * 100 ) );
+		$this->reason = $arguments['reason'] ?? '';
 	}
 
 	/**
-	 * Create the request body.
+	 * Make the request.
 	 *
-	 * @return string
+	 * @return RefundCreatedInterface|WP_Error
 	 */
-	protected function get_body() {
+	public function request() {
+		$this->client = $this->get_client();
 
-		$body = array(
-			'amount_in_minor' => $this->amount,
-			'reference'       => $this->reason,
-		);
-
-		return $body;
+		try {
+			return $this->refund_payment();
+		}
+		catch (Exception $e) {
+			return new WP_Error( 'tl_refund_payment_error', $e->getMessage() );
+		}
 	}
 
 	/**
-	 * Get the request url.
+	 * Refund the payment.
 	 *
-	 * @return string
-	 */
-	protected function get_request_url() {
-		$truelayer_token_url = $this->get_api_url_base() . $this->endpoint;
-
-		return $truelayer_token_url;
-	}
-
-	/**
-	 * Request headers.
+	 * @return RefundCreatedInterface|RefundFailedInterface|WP_Error
 	 *
-	 * @param array $body The request body.
-	 * @return array
+	 * @throws Exception
 	 */
-	protected function get_request_headers( $body = array() ) {
-		$token = TrueLayer()->api->get_token();
+	private function refund_payment() {
+		$payment_id = $this->order->get_transaction_id();
+		$reference  = ! empty( $this->reason ) ? $this->reason : __( 'Refund for order ', 'truelayer-for-woocommerce' ) . $this->order->get_order_number();
 
-		return array(
-			'Content-Type'    => 'application/json',
-			'Idempotency-Key' => $this->idempotency_key,
-			'Tl-Signature'    => Truelayer_Helper_Signing::get_tl_signature( $body, $this ),
-			'TL-Agent'        => 'truelayer-woocommerce/' . TRUELAYER_WC_PLUGIN_VERSION,
-			'Authorization'   => "Bearer $token",
-		);
-	}
+		// Get the payment.
+		$payment = TrueLayer()->api->get_payment_status( $payment_id );
 
-	/**
-	 * Get request arguments and check request body.
-	 *
-	 * @return bool|array
-	 */
-	protected function get_request_args() {
-		$body = $this->get_body();
+		// Refund the payment.
+		$refund = $this->client
+			->refund()
+			->payment( $payment )
+			->amountInMinor( $this->amount )
+			->reference( $reference )
+			->create();
 
-		return array(
-			'headers'    => $this->get_request_headers( $body ),
-			'user-agent' => $this->get_user_agent(),
-			'method'     => $this->method,
-			'timeout'    => apply_filters( 'truelayer_request_timeout', 10 ),
-			'body'       => apply_filters( 'truelayer_request_args', wp_json_encode( $body ) ),
-		);
+		return $refund;
 	}
 }
