@@ -7,47 +7,48 @@
 
 defined( 'ABSPATH' ) || exit;
 
+use Krokedil_TrueLayer_Dependencies\TrueLayer\Interfaces\MerchantAccount\MerchantAccountInterface;
+
 /**
  * Class for the request to add a item to the TrueLayer merchant accounts.
  */
-class TrueLayer_Get_Merchant_Accounts extends TrueLayer_Request_Get {
+class TrueLayer_Get_Merchant_Accounts extends TrueLayer_Request {
 
 	/**
 	 * Class constructor.
 	 *
 	 * @param array $arguments The request arguments.
 	 */
-	public function __construct( $arguments ) {
+	public function __construct( $arguments = array() ) {
 		parent::__construct( $arguments );
 		$this->log_title = 'Get TrueLayer merchant account';
 		$this->arguments = $arguments;
 	}
 
 	/**
-	 * Get the request url.
+	 * Make the request.
 	 *
-	 * @return string
+	 * @return array|WP_Error
 	 */
-	protected function get_request_url() {
+	public function request() {
+		$this->client = $this->get_client();
 
-		return $this->get_api_url_base() . '/merchant-accounts';
+		try {
+			return $this->get_merchant_accounts();
+		}
+		catch (Exception $e) {
+			return new WP_Error( 'tl_get_merchant_accounts_error', $e->getMessage() );
+		}
 	}
 
-
 	/**
-	 * Request headers.
+	 * Get the merchant accounts.
 	 *
-	 * @param array $body The request body.
-	 * @return array
+	 * @return MerchantAccountInterface[]|WP_Error
+	 *
+	 * @throws Exception
 	 */
-	protected function get_request_headers( $body = array() ) {
-
-		$token = TrueLayer()->api->get_token();
-
-		$request_body = array(
-			'Authorization' => "Bearer $token",
-		);
-
-		return $request_body;
+	private function get_merchant_accounts() {
+		$merchant_accounts = $this->client->getMerchantAccounts();
 	}
 }
