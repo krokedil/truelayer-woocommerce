@@ -1,4 +1,5 @@
-<?php // phpcs:ignore
+<?php
+use TrueLayer\Interfaces\Payment\RefundFailedInterface;// phpcs:ignore
 /**
  * TrueLayer payment for WooComerce gateway class.
  *
@@ -142,34 +143,34 @@ class TrueLayer_Payment_Gateway extends WC_Payment_Gateway {
 	 * @return array
 	 */
 	public function process_payment( $order_id ) {
+		$order       = wc_get_order( $order_id );
 		$settings    = get_option( 'woocommerce_truelayer_settings', array() );
 		$epp_enabled = $settings['truelayer_payment_page_type'] ?? 'HPP';
 
-		$response = TrueLayer()->api->create_payment( $order_id );
+		$payment = TrueLayer()->api->create_payment( $order );
 
-		if ( is_wp_error( $response ) ) {
+		if ( is_wp_error( $payment ) ) {
 			$note = __( 'Failed creating order with TrueLayer', 'truelayer-for-woocommerce' );
 			wc_add_notice( $note, 'error' );
-                        TrueLayer_Logger::log( sprintf( 'Failed creating order with TrueLayer. Error message: %s', $response->get_error_message() ) );
+			TrueLayer_Logger::log( sprintf( 'Failed creating order with TrueLayer. Error message: %s', $payment->get_error_message() ) );
 
 			return array(
 				'result' => 'error',
 			);
 		}
 
-		$truelayer_payment_id    = $response['id'];
-		$truelayer_payment_token = $response['resource_token'];
+		$order->update_meta_data( '_truelayer_payment_id', $payment->getId() );
+		$order->update_meta_data( '_truelayer_payment_token', $payment->getResourceToken() );
 
-		update_post_meta( $order_id, '_truelayer_payment_id', $truelayer_payment_id );
-		update_post_meta( $order_id, '_truelayer_payment_token', $truelayer_payment_token );
+		$build_test_url = Truelayer_Helper_Hosted_Payment_Page_URL::build_hosted_payment_page_url( $order );
 
-		$build_test_url = Truelayer_Helper_Hosted_Payment_Page_URL::build_hosted_payment_page_url( $order_id );
+		$order->save();
 
 		if ( 'EPP' === $epp_enabled ) {
 			$url = add_query_arg(
 				array(
-					'payment_id' => $truelayer_payment_id,
-					'token'      => $truelayer_payment_token
+					'payment_id' => $payment->getId(),
+					'token'      => $payment->getResourceToken(),
 				),
 				home_url( '/wc-api/TrueLayer_Redirect/' )
 			);
@@ -184,7 +185,6 @@ class TrueLayer_Payment_Gateway extends WC_Payment_Gateway {
 			'result'   => 'success',
 			'redirect' => $build_test_url,
 		);
-
 	}
 
 	/**
@@ -193,7 +193,7 @@ class TrueLayer_Payment_Gateway extends WC_Payment_Gateway {
 	 * @param integer $order_id WooCommerce order id.
 	 * @param integer $amount The refund amount.
 	 * @param string  $reason Reason for refund.
-	 * @return bool
+	 * @return bool|WP_Error
 	 */
 	public function process_refund( $order_id, $amount = 0, $reason = '' ) {
 
@@ -204,7 +204,13 @@ class TrueLayer_Payment_Gateway extends WC_Payment_Gateway {
 		if ( is_wp_error( $truelayer_refund ) ) {
 			// translators: refund error.
 			$order->add_order_note( sprintf( __( 'TrueLayer order refund failed: %s', 'truelayer-for-woocommerce' ), wp_json_encode( $truelayer_refund->get_error_message() ) ) );
-			return false;
+			return $truelayer_refund;
+		}
+
+		if ( $truelayer_refund instanceof RefundFailedInterface ) {
+			// translators: refund error.
+			$order->add_order_note( sprintf( __( 'TrueLayer order refund failed: %s', 'truelayer-for-woocommerce' ), wp_json_encode( $truelayer_refund->getFailureReason() ) ) );
+			return new WP_Error( 'refund_failed', $truelayer_refund->getFailureReason() );
 		}
 
 		// translators: refund amount.
@@ -265,7 +271,6 @@ class TrueLayer_Payment_Gateway extends WC_Payment_Gateway {
 			<div class="save-separator"></div>
 			<?php
 	}
-
 }
 
 /**
