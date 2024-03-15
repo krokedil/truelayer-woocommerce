@@ -9,8 +9,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use TrueLayer\Signing\Signer;
-
 /**
  * Helper class for the redirect link generation.
  */
@@ -43,5 +41,4 @@ class Truelayer_Helper_Hosted_Payment_Page_URL {
 
 		return $hosted_payment_page_url;
 	}
-
 }

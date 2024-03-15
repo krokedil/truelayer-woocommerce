@@ -1,10 +1,11 @@
-<?php
-use TrueLayer\Interfaces\Payment\RefundFailedInterface;// phpcs:ignore
+<?php // phpcs:ignore
 /**
- * TrueLayer payment for WooComerce gateway class.
+ * TrueLayer payment for WooCommerce gateway class.
  *
  * @package TrueLayer_For_WooCommerce/Classes
  */
+
+use TrueLayer\Interfaces\Payment\RefundFailedInterface;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -278,6 +279,7 @@ class TrueLayer_Payment_Gateway extends WC_Payment_Gateway {
  *
  * @wp_hook woocommerce_payment_gateways
  * @param  array $methods New registered payment method.
+ *
  * @return array $methods New registered payment method.
  */
 function register_truelayer_gateway( $methods ) {

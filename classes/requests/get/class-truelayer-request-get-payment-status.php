@@ -1,15 +1,16 @@
 <?php
-use Krokedil_TrueLayer_Dependencies\TrueLayer\Interfaces\Payment\PaymentRetrievedInterface;
 /**
  * Class for the request to fetch the TrueLayer payment status.
  *
  * @package TrueLayer_For_WooCommerce/Classes/Requests/Get
  */
 
+use Krokedil_TrueLayer_Dependencies\TrueLayer\Interfaces\Payment\PaymentRetrievedInterface;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Class for the request to add a item to the TrueLayer payment statusr.
+ * Class for the request to add a item to the TrueLayer payment status.
  */
 class TrueLayer_Request_Get_Payment_Status extends TrueLayer_Request {
 
@@ -21,7 +22,7 @@ class TrueLayer_Request_Get_Payment_Status extends TrueLayer_Request {
 	public function __construct( $arguments ) {
 		parent::__construct( $arguments );
 		$this->log_title = 'Get TrueLayer payment status';
-		$this->arguments       = $arguments;
+		$this->arguments = $arguments;
 	}
 
 	/**
@@ -34,8 +35,7 @@ class TrueLayer_Request_Get_Payment_Status extends TrueLayer_Request {
 
 		try {
 			return $this->get_payment_status();
-		}
-		catch (Exception $e) {
+		} catch ( Exception $e ) {
 			return new WP_Error( 'tl_get_payment_status_error', $e->getMessage() );
 		}
 	}
@@ -45,7 +45,7 @@ class TrueLayer_Request_Get_Payment_Status extends TrueLayer_Request {
 	 *
 	 * @return PaymentRetrievedInterface|WP_Error
 	 *
-	 * @throws Exception
+	 * @throws Exception If the request fails.
 	 */
 	private function get_payment_status() {
 		$payment_status = $this->client->getPayment( $this->arguments['transaction_id'] ?? '' );

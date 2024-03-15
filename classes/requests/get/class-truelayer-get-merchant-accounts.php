@@ -35,8 +35,7 @@ class TrueLayer_Get_Merchant_Accounts extends TrueLayer_Request {
 
 		try {
 			return $this->get_merchant_accounts();
-		}
-		catch (Exception $e) {
+		} catch ( Exception $e ) {
 			return new WP_Error( 'tl_get_merchant_accounts_error', $e->getMessage() );
 		}
 	}
@@ -46,9 +45,11 @@ class TrueLayer_Get_Merchant_Accounts extends TrueLayer_Request {
 	 *
 	 * @return MerchantAccountInterface[]|WP_Error
 	 *
-	 * @throws Exception
+	 * @throws Exception If the request fails.
 	 */
 	private function get_merchant_accounts() {
 		$merchant_accounts = $this->client->getMerchantAccounts();
+
+		return $merchant_accounts;
 	}
 }

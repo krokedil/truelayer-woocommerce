@@ -13,7 +13,7 @@ use TrueLayer\Signing\Signer;
 use Ramsey\Uuid\Uuid;
 
 /**
- * Heler class for the request signing.
+ * Helper class for the request signing.
  */
 class Truelayer_Helper_Signing {
 	/**

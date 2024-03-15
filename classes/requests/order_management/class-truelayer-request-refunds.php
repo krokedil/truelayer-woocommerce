@@ -66,8 +66,7 @@ class TrueLayer_Request_Refunds extends TrueLayer_Request {
 
 		try {
 			return $this->refund_payment();
-		}
-		catch (Exception $e) {
+		} catch ( Exception $e ) {
 			return new WP_Error( 'tl_refund_payment_error', $e->getMessage() );
 		}
 	}
@@ -77,7 +76,7 @@ class TrueLayer_Request_Refunds extends TrueLayer_Request {
 	 *
 	 * @return RefundCreatedInterface|RefundFailedInterface|WP_Error
 	 *
-	 * @throws Exception
+	 * @throws Exception When the payment is not found.
 	 */
 	private function refund_payment() {
 		$payment_id = $this->order->get_transaction_id();
