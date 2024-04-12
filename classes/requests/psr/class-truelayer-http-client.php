@@ -50,11 +50,6 @@ class TrueLayer_Http_Client implements ClientInterface {
 		$args         = $this->formatArgs( $request );
 		$http_version = $request->getProtocolVersion();
 
-		// If the request is for the auth token, set the log title.
-		if ( str_contains( $uri, 'auth' ) ) {
-			$this->log_title = 'Get auth token';
-		}
-
 		// Make the request.
 		$response = wp_remote_request( $uri, $args );
 
@@ -95,8 +90,11 @@ class TrueLayer_Http_Client implements ClientInterface {
 		);
 
 		// Add the request body if it is set.
-		if ( $request->getBody()->getSize() > 0 && ! empty( json_decode( (string) $request->getBody() ) ) ) {
-			$args['body'] = apply_filters( 'truelayer_request_args', (string) $request->getBody() );
+		if ( $request->getBody()->getSize() > 0 ) {
+			$body = json_decode( (string) $request->getBody(), true );
+			if ( ! empty( $body ) ) {
+				$args['body'] = apply_filters( 'truelayer_request_args', (string) wp_json_encode( $body ) );
+			}
 		}
 
 		return $args;
@@ -130,13 +128,20 @@ class TrueLayer_Http_Client implements ClientInterface {
 	 * @return void
 	 */
 	private function logRequest( $uri, $args, $response_body, $response_code ) {
+		$log_title = $this->log_title;
+
+		// If the request is for the auth token, set the log title.
+		if ( str_contains( $uri, 'auth' ) ) {
+			$log_title = 'Get auth token';
+		}
+
 		// If the payment ID is not set, try to get it from the response body.
 		if ( empty( $this->payment_id ) && ! empty( $response_body ) ) {
 			$response_json    = json_decode( $response_body, true );
 			$this->payment_id = $response_json['id'] ?? null;
 		}
 
-		$log = TrueLayer_Logger::format_log( $this->payment_id, $args['method'], $this->log_title, $args, json_decode( $response_body, true ), $response_code, (string) $uri );
+		$log = TrueLayer_Logger::format_log( $this->payment_id, $args['method'], $log_title, $args, json_decode( $response_body, true ), $response_code, (string) $uri );
 
 		TrueLayer_Logger::log( $log );
 	}
