@@ -1,4 +1,6 @@
 <?php
+use KrokedilTrueLayerDeps\TrueLayer\Exceptions\ApiResponseUnsuccessfulException;
+use KrokedilTrueLayerDeps\TrueLayer\Exceptions\ValidationException;
 /**
  * Create Payment request body class.
  *
@@ -45,6 +47,10 @@ class TrueLayer_Request_Create_Payment extends TrueLayer_Request {
 
 		try {
 			return $this->create_payment();
+		} catch ( ValidationException $e ) {
+			return new WP_Error( 'tl_create_payment_validation_error', 'Validation error' );
+		} catch ( ApiResponseUnsuccessfulException $e ) {
+			return new WP_Error( 'tl_create_payment_api_response_error', $e->getMessage() );
 		} catch ( Exception $e ) {
 			return new WP_Error( 'tl_create_payment_error', $e->getMessage() );
 		}
@@ -55,7 +61,7 @@ class TrueLayer_Request_Create_Payment extends TrueLayer_Request {
 	 *
 	 * @return PaymentCreatedInterface|WP_Error
 	 *
-	 * @throws Exception
+	 * @throws Exception If the order ID is invalid.
 	 */
 	private function create_payment() {
 		$order = wc_get_order( $this->order_id );
@@ -87,7 +93,7 @@ class TrueLayer_Request_Create_Payment extends TrueLayer_Request {
 			->bankTransfer()
 			->beneficiary( $this->create_beneficiary( $order ) );
 
-		$payment_method = $this->maybe_add_provider_selection( $payment_method );
+		$payment_method = $this->add_provider_selection( $payment_method, $order->get_billing_country() );
 
 		return $payment_method;
 	}
@@ -107,29 +113,21 @@ class TrueLayer_Request_Create_Payment extends TrueLayer_Request {
 	}
 
 	/**
-	 * Maybe add provider selection.
+	 * Add provider selection.
 	 *
 	 * @param BankTransferPaymentMethodInterface $payment_method The payment method object.
+	 * @param string                             $billing_country The billing country.
 	 *
 	 * @return BankTransferPaymentMethodInterface
 	 */
-	private function maybe_add_provider_selection( $payment_method ) {
-		$release_channel  = $this->get_release_channel();
-		$banking_provider = $this->get_banking_providers();
+	private function add_provider_selection( $payment_method, $billing_country ) {
+		$release_channel   = $this->get_release_channel();
+		$banking_providers = $this->get_banking_providers();
 
-		if ( empty( $release_channel ) && empty( $banking_provider ) ) {
-			return $payment_method;
-		}
-
-		$provider_filter = $this->client->providerFilter();
-
-		if ( ! empty( $release_channel ) ) {
-			$provider_filter->releaseChannel( $release_channel );
-		}
-
-		if ( ! empty( $banking_provider ) ) {
-			$provider_filter->customerSegments( $banking_provider );
-		}
+		$provider_filter = $this->client->providerFilter()
+			->countries( array( $billing_country ) )
+			->releaseChannel( $release_channel )
+			->customerSegments( $banking_providers );
 
 		$provider_selection = $this->client->providerSelection()
 			->userSelected()
