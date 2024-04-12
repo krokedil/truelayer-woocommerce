@@ -1,5 +1,4 @@
 <?php
-use Defuse\Crypto\Key;
 
 /**
  * The TrueLayer Migration Functions file.
@@ -8,6 +7,8 @@ use Defuse\Crypto\Key;
  *
  * @package TrueLayer_For_WooCommerce/Includes
  */
+
+use KrokedilTrueLayerDeps\Defuse\Crypto\Key;
 
 defined( 'ABSPATH' ) || exit;
 

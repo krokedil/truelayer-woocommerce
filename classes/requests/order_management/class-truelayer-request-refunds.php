@@ -5,8 +5,8 @@
  * @package TrueLayer_For_WooCommerce/Classes/Requests/Order_Management
  */
 
-use Krokedil_TrueLayer_Dependencies\TrueLayer\Interfaces\Payment\RefundCreatedInterface;
-use Krokedil_TrueLayer_Dependencies\TrueLayer\Interfaces\Payment\RefundFailedInterface;
+use KrokedilTrueLayerDeps\TrueLayer\Interfaces\Payment\RefundCreatedInterface;
+use KrokedilTrueLayerDeps\TrueLayer\Interfaces\Payment\RefundFailedInterface;
 
 /**
  * Class TrueLayer_Request_Refunds

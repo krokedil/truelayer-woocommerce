@@ -5,10 +5,10 @@
  * @package TrueLayer_For_WooCommerce/classes/requests/psr
  */
 
-use Krokedil_TrueLayer_Dependencies\Nyholm\Psr7\Response;
-use Krokedil_TrueLayer_Dependencies\Psr\Http\Client\ClientInterface;
-use Krokedil_TrueLayer_Dependencies\Psr\Http\Message\RequestInterface;
-use Krokedil_TrueLayer_Dependencies\Psr\Http\Message\ResponseInterface;
+use KrokedilTrueLayerDeps\Nyholm\Psr7\Response;
+use KrokedilTrueLayerDeps\Psr\Http\Client\ClientInterface;
+use KrokedilTrueLayerDeps\Psr\Http\Message\RequestInterface;
+use KrokedilTrueLayerDeps\Psr\Http\Message\ResponseInterface;
 
 defined( 'ABSPATH' ) || exit;
 

@@ -33,7 +33,6 @@ function truelayer_confirm_order( $order, $transaction_id ) {
 		$order->payment_complete( $transaction_id );
 		$order->add_order_note( __( 'Order successfully placed with TrueLayer. Payment transaction id:', 'truelayer-for-woocommerce' ) . ' ' . $transaction_id );
 	}
-
 }
 
 /**

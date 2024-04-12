@@ -126,19 +126,19 @@ if ( ! class_exists( 'TrueLayer_For_WooCommerce' ) ) {
 		 * @return mixed
 		 */
 		public function init_composer() {
-			$autoloader = TRUELAYER_WC_PLUGIN_PATH . '/vendor/autoload.php';
+			$scoper_autoloader = TRUELAYER_WC_PLUGIN_PATH . '/dependencies/scoper-autoload.php';
 
-			if ( ! is_readable( $autoloader ) ) {
+			if ( ! is_readable( $scoper_autoloader ) ) {
 				self::missing_autoloader();
 				return false;
 			}
 
-			$autoloader_result = require $autoloader;
-			if ( ! $autoloader_result ) {
+			$scoper_autoloader_result = require $scoper_autoloader;
+			if ( ! $scoper_autoloader_result ) {
 				return false;
 			}
 
-			return $autoloader_result;
+			return $scoper_autoloader_result;
 		}
 
 		/**

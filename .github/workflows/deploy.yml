@@ -10,6 +10,13 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@master
+
+    - name: Cache Composer dependencies
+      uses: actions/cache@v2
+      with:
+        path: /tmp/composer-cache
+        key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+
     - name: Install Composer dependencies
       uses: php-actions/composer@v6
       with:
@@ -19,6 +26,11 @@ jobs:
       run: |
         npm ci
         npm run build
+        composer global config --no-plugins allow-plugins.wpify/scoper true
+        composer global require wpify/scoper
+        sudo chown -R $USER:$USER $GITHUB_WORKSPACE/vendor
+        composer install --no-dev --optimize-autoloader
+
     - name: WordPress Plugin Deploy
       uses: 10up/action-wordpress-plugin-deploy@master
       env:

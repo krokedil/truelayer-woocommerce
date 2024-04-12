@@ -5,11 +5,11 @@
  * @package TrueLayer/Classes/
  */
 
-use Krokedil_TrueLayer_Dependencies\Defuse\Crypto\Crypto;
-use Krokedil_TrueLayer_Dependencies\Defuse\Crypto\Exception\BadFormatException;
-use Krokedil_TrueLayer_Dependencies\Defuse\Crypto\Exception\EnvironmentIsBrokenException;
-use Krokedil_TrueLayer_Dependencies\Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
-use Krokedil_TrueLayer_Dependencies\Defuse\Crypto\Key;
+use KrokedilTrueLayerDeps\Defuse\Crypto\Crypto;
+use KrokedilTrueLayerDeps\Defuse\Crypto\Exception\BadFormatException;
+use KrokedilTrueLayerDeps\Defuse\Crypto\Exception\EnvironmentIsBrokenException;
+use KrokedilTrueLayerDeps\Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
+use KrokedilTrueLayerDeps\Defuse\Crypto\Key;
 
 /**
  * Class Truelayer_Encryption

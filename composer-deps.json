@@ -1,0 +1,21 @@
+{
+    "require": {
+        "php": ">=7.4",
+        "truelayer/client": "^1.6",
+        "defuse/php-encryption": "^2.3",
+        "ramsey/uuid": "^4.2",
+        "symfony/http-client": "^5.4",
+        "nyholm/psr7": "^1.8"
+    },
+    "config": {
+        "platform": {
+            "php": "7.4"
+        },
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    },
+    "scripts": {
+        "test": "phpunit --configuration phpunit.xml"
+    }
+}

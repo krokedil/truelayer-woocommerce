@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-use Krokedil_TrueLayer_Dependencies\TrueLayer\Interfaces\MerchantAccount\MerchantAccountInterface;
+use KrokedilTrueLayerDeps\TrueLayer\Interfaces\MerchantAccount\MerchantAccountInterface;
 
 /**
  * Class for the request to add a item to the TrueLayer merchant accounts.

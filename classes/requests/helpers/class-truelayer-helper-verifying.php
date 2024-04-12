@@ -9,8 +9,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use TrueLayer\Signing\Exceptions\InvalidSignatureException;
-use TrueLayer\Signing\Verifier;
+use KrokedilTrueLayerDeps\TrueLayer\Signing\Exceptions\InvalidSignatureException;
+use KrokedilTrueLayerDeps\TrueLayer\Signing\Verifier;
 
 /**
  * Helper class for the callback verifying.

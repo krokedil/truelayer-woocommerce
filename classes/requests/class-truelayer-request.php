@@ -1,12 +1,13 @@
 <?php
-use Krokedil_TrueLayer_Dependencies\Nyholm\Psr7\Factory\Psr17Factory;
-use Krokedil_TrueLayer_Dependencies\TrueLayer\Client;
-use Krokedil_TrueLayer_Dependencies\TrueLayer\Interfaces\Client\ClientInterface;
 /**
  * Krokedil Paynopva for WooCommerce request base class.
  *
  * @package @package TrueLayer_For_WooCommerce/classes/requests/
  */
+
+use KrokedilTrueLayerDeps\Nyholm\Psr7\Factory\Psr17Factory;
+use KrokedilTrueLayerDeps\TrueLayer\Client;
+use KrokedilTrueLayerDeps\TrueLayer\Interfaces\Client\ClientInterface;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	// Exit if accessed indirectly.

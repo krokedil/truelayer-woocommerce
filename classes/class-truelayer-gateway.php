@@ -5,7 +5,7 @@
  * @package TrueLayer_For_WooCommerce/Classes
  */
 
-use TrueLayer\Interfaces\Payment\RefundFailedInterface;
+use KrokedilTrueLayerDeps\TrueLayer\Interfaces\Payment\RefundFailedInterface;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

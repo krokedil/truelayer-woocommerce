@@ -1,51 +1,27 @@
 {
     "require": {
-        "php": ">=7.4",
-        "truelayer/client": "^1.6",
-        "defuse/php-encryption": "^2.3",
-        "ramsey/uuid": "^4.2",
-        "symfony/http-client": "^5.4",
-        "nyholm/psr7": "^1.8"
+        "php": ">=7.4"
     },
     "config": {
-        "platform": {
-            "php": "7.4"
-        },
         "allow-plugins": {
             "php-http/discovery": true,
-            "cweagans/composer-patches": true,
-            "bamarni/composer-bin-plugin": true
+            "wpify/scoper": true
         }
     },
     "require-dev": {
         "php-stubs/woocommerce-stubs": "^8.1",
         "phpunit/phpunit": "^9.6",
-        "bamarni/composer-bin-plugin": "*"
+        "wpify/scoper": "^3.2"
+    },
+    "extra": {
+        "wpify-scoper": {
+            "prefix": "KrokedilTrueLayerDeps",
+            "folder": "dependencies",
+            "autorun": false
+        }
     },
     "scripts": {
         "test": "phpunit --configuration phpunit.xml",
-        "bin": "echo 'bin not installed'",
-        "install-bin": "composer bin all install",
-        "copy-tl-config": "cp -r vendor/truelayer/client/config dependencies",
-        "copy-tl-lang": "cp -r vendor/truelayer/client/lang dependencies",
-        "scope-deps": [
-            "@php ./vendor/bin/php-scoper add-prefix --prefix=Krokedil_TrueLayer_Dependencies --force --output-dir=./dependencies --config=./scoper.inc.php --force --quiet"
-        ],
-        "autoloader-dump": "composer dump-autoload",
-        "post-install-cmd": [
-            "@install-bin",
-            "@scope-deps",
-            "@autoloader-dump"
-        ],
-        "post-update-cmd": [
-            "@install-bin",
-            "@scope-deps",
-            "@autoloader-dump"
-        ]
-    },
-    "autoload": {
-        "classmap": [
-            "dependencies/"
-        ]
+        "wpify-scoper": "wpify-scoper"
     }
 }

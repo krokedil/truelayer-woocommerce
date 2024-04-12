@@ -5,7 +5,7 @@
  * @package TrueLayer_For_WooCommerce/Classes/Requests/Get
  */
 
-use Krokedil_TrueLayer_Dependencies\TrueLayer\Interfaces\Payment\PaymentRetrievedInterface;
+use KrokedilTrueLayerDeps\TrueLayer\Interfaces\Payment\PaymentRetrievedInterface;
 
 defined( 'ABSPATH' ) || exit;
 

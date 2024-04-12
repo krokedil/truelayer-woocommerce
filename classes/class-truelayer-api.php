@@ -9,10 +9,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use Krokedil_TrueLayer_Dependencies\TrueLayer\Interfaces\MerchantAccount\MerchantAccountInterface;
-use Krokedil_TrueLayer_Dependencies\TrueLayer\Interfaces\Payment\PaymentCreatedInterface;
-use Krokedil_TrueLayer_Dependencies\TrueLayer\Interfaces\Payment\PaymentRetrievedInterface;
-use Krokedil_TrueLayer_Dependencies\TrueLayer\Interfaces\Payment\RefundCreatedInterface;
+use KrokedilTrueLayerDeps\TrueLayer\Interfaces\MerchantAccount\MerchantAccountInterface;
+use KrokedilTrueLayerDeps\TrueLayer\Interfaces\Payment\PaymentCreatedInterface;
+use KrokedilTrueLayerDeps\TrueLayer\Interfaces\Payment\PaymentRetrievedInterface;
+use KrokedilTrueLayerDeps\TrueLayer\Interfaces\Payment\RefundCreatedInterface;
 
 /**
  * The TrueLayer API class.

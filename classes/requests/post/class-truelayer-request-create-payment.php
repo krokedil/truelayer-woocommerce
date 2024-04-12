@@ -7,10 +7,10 @@
 
 defined( 'ABSPATH' ) || exit;
 
-use Krokedil_TrueLayer_Dependencies\TrueLayer\Interfaces\Beneficiary\BeneficiaryInterface;
-use Krokedil_TrueLayer_Dependencies\TrueLayer\Interfaces\Payment\PaymentCreatedInterface;
-use Krokedil_TrueLayer_Dependencies\TrueLayer\Interfaces\PaymentMethod\BankTransferPaymentMethodInterface;
-use Krokedil_TrueLayer_Dependencies\TrueLayer\Interfaces\UserInterface;
+use KrokedilTrueLayerDeps\TrueLayer\Interfaces\Beneficiary\BeneficiaryInterface;
+use KrokedilTrueLayerDeps\TrueLayer\Interfaces\Payment\PaymentCreatedInterface;
+use KrokedilTrueLayerDeps\TrueLayer\Interfaces\PaymentMethod\BankTransferPaymentMethodInterface;
+use KrokedilTrueLayerDeps\TrueLayer\Interfaces\UserInterface;
 
 /**
  * Class TrueLayer_Request_Create_Payment
@@ -45,8 +45,7 @@ class TrueLayer_Request_Create_Payment extends TrueLayer_Request {
 
 		try {
 			return $this->create_payment();
-		}
-		catch (Exception $e) {
+		} catch ( Exception $e ) {
 			return new WP_Error( 'tl_create_payment_error', $e->getMessage() );
 		}
 	}
@@ -166,7 +165,7 @@ class TrueLayer_Request_Create_Payment extends TrueLayer_Request {
 	 * Maybe add billing address.
 	 *
 	 * @param UserInterface $user The user object.
-	 * @param WC_Order $order The WooCommerce order object.
+	 * @param WC_Order      $order The WooCommerce order object.
 	 *
 	 * @return UserInterface
 	 */
@@ -205,5 +204,4 @@ class TrueLayer_Request_Create_Payment extends TrueLayer_Request {
 
 		return $user;
 	}
-
 }
