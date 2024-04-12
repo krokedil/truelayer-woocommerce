@@ -148,7 +148,7 @@ abstract class TrueLayer_Request {
 	 * @return array
 	 */
 	public function get_banking_providers() {
-		$banking_providers = empty( $this->settings['truelayer_banking_providers'] ) ? array() : $this->settings['truelayer_banking_providers'];
+		$banking_providers = empty( $this->settings['truelayer_banking_providers'] ) ? array( 'retail' ) : $this->settings['truelayer_banking_providers']; // Default from TrueLayer is retail only. @see https://docs.truelayer.com/reference/create-payment.
 		return array_map( 'strtolower', $banking_providers );
 	}
 
@@ -158,7 +158,7 @@ abstract class TrueLayer_Request {
 	 * @return array
 	 */
 	public function get_release_channel() {
-		$release_channel = empty( $this->settings['truelayer_release_channel'] ) ? array() : $this->settings['truelayer_release_channel'];
+		$release_channel = empty( $this->settings['truelayer_release_channel'] ) ? 'general_availability' : $this->settings['truelayer_release_channel']; // Default from TrueLayer is general_availability. @see https://docs.truelayer.com/reference/create-payment.
 		return $release_channel;
 	}
 
