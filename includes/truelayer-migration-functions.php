@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The TrueLayer Migration Functions file.
  *
