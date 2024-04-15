@@ -1,6 +1,4 @@
 <?php
-use KrokedilTrueLayerDeps\TrueLayer\Exceptions\ApiResponseUnsuccessfulException;
-use KrokedilTrueLayerDeps\TrueLayer\Exceptions\ValidationException;
 /**
  * Create Payment request body class.
  *
@@ -9,6 +7,8 @@ use KrokedilTrueLayerDeps\TrueLayer\Exceptions\ValidationException;
 
 defined( 'ABSPATH' ) || exit;
 
+use KrokedilTrueLayerDeps\TrueLayer\Exceptions\ApiResponseUnsuccessfulException;
+use KrokedilTrueLayerDeps\TrueLayer\Exceptions\ValidationException;
 use KrokedilTrueLayerDeps\TrueLayer\Interfaces\Beneficiary\BeneficiaryInterface;
 use KrokedilTrueLayerDeps\TrueLayer\Interfaces\Payment\PaymentCreatedInterface;
 use KrokedilTrueLayerDeps\TrueLayer\Interfaces\PaymentMethod\BankTransferPaymentMethodInterface;
@@ -47,10 +47,8 @@ class TrueLayer_Request_Create_Payment extends TrueLayer_Request {
 
 		try {
 			return $this->create_payment();
-		} catch ( ValidationException $e ) {
-			return new WP_Error( 'tl_create_payment_validation_error', 'Validation error' );
 		} catch ( ApiResponseUnsuccessfulException $e ) {
-			return new WP_Error( 'tl_create_payment_api_response_error', $e->getMessage() );
+			return new WP_Error( 'tl_create_payment_api_response_error', __( 'Failed to place the order, please try again.' ), wp_json_encode( $e->getErrors() ?? array() ) );
 		} catch ( Exception $e ) {
 			return new WP_Error( 'tl_create_payment_error', $e->getMessage() );
 		}

@@ -32,6 +32,11 @@ class TrueLayer_Http_Client implements ClientInterface {
 
 	/**
 	 * Class constructor.
+	 *
+	 * @param string      $log_title The log title to use for logging.
+	 * @param string|null $payment_id The payment ID to use for the logging.
+	 *
+	 * @return void
 	 */
 	public function __construct( $log_title = 'TrueLayer Request', $payment_id = null ) {
 		$this->log_title  = $log_title;

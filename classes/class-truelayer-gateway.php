@@ -153,7 +153,13 @@ class TrueLayer_Payment_Gateway extends WC_Payment_Gateway {
 		if ( is_wp_error( $payment ) ) {
 			$note = __( 'Failed creating order with TrueLayer', 'truelayer-for-woocommerce' );
 			wc_add_notice( $note, 'error' );
-			TrueLayer_Logger::log( sprintf( 'Failed creating order with TrueLayer. Error message: %s', $payment->get_error_message() ) );
+
+			// If we have data in the error, get it and parse it for the log.
+			$error_message = sprintf( 'Failed creating order with TrueLayer. Error message: %s', $payment->get_error_message() );
+			if ( ! empty( $payment->get_error_data() ) ) {
+				$error_message .= ' - Data: ' . $payment->get_error_data();
+			}
+			TrueLayer_Logger::log( $error_message );
 
 			return array(
 				'result' => 'error',
@@ -215,9 +221,9 @@ class TrueLayer_Payment_Gateway extends WC_Payment_Gateway {
 		}
 
 		// translators: refund amount.
-		$text          = __( 'TrueLayer received refund request (%s). Awaiting refund executed notification from TrueLayer.', 'truelayer-for-woocommerce' );
-		$formated_text = sprintf( $text, wc_price( $amount ) );
-		$order->add_order_note( $formated_text );
+		$text           = __( 'TrueLayer received refund request (%s). Awaiting refund executed notification from TrueLayer.', 'truelayer-for-woocommerce' );
+		$formatted_text = sprintf( $text, wc_price( $amount ) );
+		$order->add_order_note( $formatted_text );
 		return true;
 	}
 
