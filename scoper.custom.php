@@ -37,5 +37,13 @@ function customize_php_scoper_config( array $config = array() ) {
 	$config['expose-functions'][] = 'windows_os';
 	$config['expose-functions'][] = 'with';
 
+	$config['patchers'][] = function ( string $file_path, string $prefix, string $content ) use ( $config ): string {
+		if ( strpos( $file_path, 'paragonie/sodium_compat/lib/constants.php' ) !== false ) {
+				$content = str_replace( 'use ParagonIE_Sodium_Compat;', "use {$prefix}\ParagonIE_Sodium_Compat;", $content );
+		}
+
+		return $content;
+	};
+
 	return $config;
 }
