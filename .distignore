@@ -32,3 +32,6 @@ yarn.lock
 /tests
 phpunit.xml.dist
 .phpunit.result.cache
+vendor/**/*
+vendor/*
+vendor
