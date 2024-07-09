@@ -5,12 +5,14 @@
  * @package TrueLayer_For_WooCommerce/Classes/Requests/Get
  */
 
+use KrokedilTrueLayerDeps\TrueLayer\Interfaces\Payment\PaymentRetrievedInterface;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Class for the request to add a item to the TrueLayer payment statusr.
+ * Class for the request to add a item to the TrueLayer payment status.
  */
-class TrueLayer_Request_Get_Payment_Status extends TrueLayer_Request_Get {
+class TrueLayer_Request_Get_Payment_Status extends TrueLayer_Request {
 
 	/**
 	 * Class constructor.
@@ -19,40 +21,35 @@ class TrueLayer_Request_Get_Payment_Status extends TrueLayer_Request_Get {
 	 */
 	public function __construct( $arguments ) {
 		parent::__construct( $arguments );
-		$this->log_title       = 'Get TrueLayer payment status';
-		$this->endpoint        = $this->get_request_url();
-		$this->idempotency_key = Truelayer_Helper_Signing::get_uuid();
-		$this->arguments       = $arguments;
+		$this->log_title = 'Get TrueLayer payment status';
+		$this->arguments = $arguments;
 	}
 
 	/**
-	 * Get the request url.
+	 * Make the request.
 	 *
-	 * @return string
+	 * @return PaymentRetrievedInterface|WP_Error
 	 */
-	protected function get_request_url() {
-		$truelayer_payment_id = $this->arguments['transaction_id'];
+	public function request() {
+		$this->client = $this->get_client();
 
-		return $this->get_api_url_base() . "/payments/{$truelayer_payment_id}";
+		try {
+			return $this->get_payment_status();
+		} catch ( Exception $e ) {
+			return new WP_Error( 'tl_get_payment_status_error', $e->getMessage() );
+		}
 	}
 
-
 	/**
-	 * Request headers.
+	 * Get the payment status.
 	 *
-	 * @param array $body The request body.
-	 * @return array
+	 * @return PaymentRetrievedInterface|WP_Error
+	 *
+	 * @throws Exception If the request fails.
 	 */
-	protected function get_request_headers( $body = array() ) {
-		$token = TrueLayer()->api->get_token();
+	private function get_payment_status() {
+		$payment_status = $this->client->getPayment( $this->arguments['transaction_id'] ?? '' );
 
-		$request_body = array(
-			'X-TL-Webhook-Timestamp' => '',
-			'Tl-Signature'           => Truelayer_Helper_Signing::get_tl_signature( $body, $this ),
-			'TL-Agent'               => 'truelayer-woocommerce/' . TRUELAYER_WC_PLUGIN_VERSION,
-			'Authorization'          => "Bearer $token",
-		);
-
-		return $request_body;
+		return $payment_status;
 	}
 }

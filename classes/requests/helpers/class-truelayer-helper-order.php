@@ -22,7 +22,7 @@ class TrueLayer_Helper_Order {
 	 * Get the order total amount.
 	 *
 	 * @param WC_Order $order The WooCommerce order.
-	 * @return int
+	 * @return string
 	 */
 	public static function get_order_amount( $order ) {
 
@@ -35,7 +35,7 @@ class TrueLayer_Helper_Order {
 	 * Get the full account holder name.
 	 *
 	 * @param WC_Order $order The WooCommerce order.
-	 * @return int
+	 * @return string
 	 */
 	public static function get_account_holder_name( $order ) {
 
@@ -44,16 +44,16 @@ class TrueLayer_Helper_Order {
 		return $account_holder_name;
 	}
 
-    /**
-     * Get order meta - user date of birth
-     * @param $order
-     * @return mixed
-     */
-    public static function get_user_date_of_birth( $order ) {
+	/**
+	 * Get order meta - user date of birth
+	 *
+	 * @param WC_Order $order The WooCommerce order.
+	 * @return mixed
+	 */
+	public static function get_user_date_of_birth( $order ) {
 
-        $birth_date =  $order->get_meta( apply_filters( 'truelayer_birth_date_field', '_truelayer_user_birth_date', $order->get_id(), $order ), true );
+		$birth_date = $order->get_meta( apply_filters( 'truelayer_birth_date_field', '_truelayer_user_birth_date', $order->get_id(), $order ), true );
 
-        return $birth_date;
-
-    }
+		return $birth_date;
+	}
 }

@@ -6,6 +6,10 @@
 .gitignore
 composer.json
 composer.lock
+composer-deps.json
+composer-deps.lock
+/tmp*
+scoper.custom.php
 docker-compose.phpunit.yml
 docker-compose.yml
 Dockerfile
@@ -28,3 +32,6 @@ yarn.lock
 /tests
 phpunit.xml.dist
 .phpunit.result.cache
+vendor/**/*
+vendor/*
+vendor

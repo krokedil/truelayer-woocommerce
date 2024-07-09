@@ -10,6 +10,7 @@ global $mock_settings;
 
 // Include the autoloader.
 require_once PLUGIN_ROOT . '/vendor/autoload.php';
+require_once PLUGIN_ROOT . '/dependencies/scoper-autoload.php';
 
 // Include the mock file.
 require_once 'mock.php';

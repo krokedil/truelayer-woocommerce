@@ -70,11 +70,11 @@ class TrueLayer_Logger {
 	public static function format_log( $truelayer_order_id, $method, $title, $request_args, $response, $code, $request_url = null, $tl_trace_id = '' ) {
 		// Clean the request args body from the client_secret if its set.
 		if ( isset( $request_args['body'] ) ) {
-			$request_body = json_decode($request_args['body'], true);
+			$request_body = json_decode( $request_args['body'], true );
 
 			if ( isset( $request_body['client_secret'] ) ) {
 				unset( $request_body['client_secret'] );
-				$request_args['body'] = wp_json_encode($request_body);
+				$request_args['body'] = wp_json_encode( $request_body );
 			}
 		}
 
@@ -84,7 +84,7 @@ class TrueLayer_Logger {
 			if ( ! is_wp_error( $response ) && isset( $response['body'] ) ) {
 				$response_body                 = json_decode( $response['body'], true );
 				$response_body['access_token'] = 'Removed from log';
-				$response['body']              = $response_body; // Dont json encode to prevent double encoding in the log.
+				$response['body']              = $response_body; // Don't json encode to prevent double encoding in the log.
 			}
 
 			// Remove the auth header from the request args if its set.
@@ -151,5 +151,4 @@ class TrueLayer_Logger {
 		$logs   = wp_json_encode( $logs );
 		update_option( 'krokedil_debuglog_truelayer', $logs, false );
 	}
-
 }

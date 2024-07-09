@@ -9,15 +9,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use TrueLayer\Signing\Exceptions\InvalidSignatureException;
-use TrueLayer\Signing\Verifier;
+use KrokedilTrueLayerDeps\TrueLayer\Signing\Exceptions\InvalidSignatureException;
+use KrokedilTrueLayerDeps\TrueLayer\Signing\Verifier;
 
 /**
- * Heler class for the callback verifying.
+ * Helper class for the callback verifying.
  */
 class Truelayer_Helper_Verifying {
 	/**
-	 * Get the Tl Signature for the requst.
+	 * Get the Tl Signature for the requests.
 	 *
 	 * @param array $body The request body.
 	 * @param array $headers The callback headers.
