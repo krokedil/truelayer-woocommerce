@@ -12,7 +12,9 @@
  * WC requires at least: 6.0.0
  * WC tested up to: 9.2.3
  *
- * Copyright (c) 2022-2023 Krokedil
+ * Requires Plugins: woocommerce
+ *
+ * Copyright (c) 2022-2024 Krokedil
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
