@@ -1,6 +1,6 @@
 <?php
 /**
- * Krokedil Paynopva for WooCommerce request base class.
+ * Krokedil Truelayer for WooCommerce request base class.
  *
  * @package @package TrueLayer_For_WooCommerce/classes/requests/
  */
