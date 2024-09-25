@@ -36,11 +36,11 @@ class TrueLayer_API {
 	/**
 	 * Create a TrueLayer payment.
 	 *
-	 * @param int $order_id The WooCommerce Order ID.
+	 * @param WC_Order|int|WP_Post $order The WooCommerce order, order ID or WP_Post object.
 	 * @return PaymentCreatedInterface|WP_Error
 	 */
-	public function create_payment( $order_id ) {
-		$request  = new TrueLayer_Request_Create_Payment( array( 'order_id' => $order_id ) );
+	public function create_payment( $order ) {
+		$request  = new TrueLayer_Request_Create_Payment( array( 'order' => $order ) );
 		$response = $request->request();
 
 		return $this->check_for_api_error( $response );
@@ -49,17 +49,17 @@ class TrueLayer_API {
 	/**
 	 * Refund Payment via TrueLayer.
 	 *
-	 * @param int    $order_id the WooCOmmerce Order ID.
-	 * @param int    $amount The amount to be refunded.
-	 * @param string $reason the refund reason.
+	 * @param WC_Order|int|WP_Post $order The WooCommerce order, order ID or WP_Post object.
+	 * @param int                  $amount The amount to be refunded.
+	 * @param string               $reason the refund reason.
 	 * @return RefundCreatedInterface|WP_Error
 	 */
-	public function refund_payment( $order_id, $amount, $reason ) {
+	public function refund_payment( $order, $amount, $reason ) {
 		$request  = new TrueLayer_Request_Refunds(
 			array(
-				'order_id' => $order_id,
-				'amount'   => $amount,
-				'reason'   => $reason,
+				'order'  => $order,
+				'amount' => $amount,
+				'reason' => $reason,
 			)
 		);
 		$response = $request->request();

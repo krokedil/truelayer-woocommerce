@@ -8,7 +8,6 @@
 defined( 'ABSPATH' ) || exit;
 
 use KrokedilTrueLayerDeps\TrueLayer\Exceptions\ApiResponseUnsuccessfulException;
-use KrokedilTrueLayerDeps\TrueLayer\Exceptions\ValidationException;
 use KrokedilTrueLayerDeps\TrueLayer\Interfaces\Beneficiary\BeneficiaryInterface;
 use KrokedilTrueLayerDeps\TrueLayer\Interfaces\Payment\PaymentCreatedInterface;
 use KrokedilTrueLayerDeps\TrueLayer\Interfaces\PaymentMethod\BankTransferPaymentMethodInterface;
@@ -20,11 +19,11 @@ use KrokedilTrueLayerDeps\TrueLayer\Interfaces\UserInterface;
 class TrueLayer_Request_Create_Payment extends TrueLayer_Request {
 
 	/**
-	 * WooCommerce Order ID
+	 * The WooCommerce order, order ID or WP_Post object.
 	 *
-	 * @var int
+	 * @var WC_Order|int|WP_Post
 	 */
-	public $order_id;
+	public $order;
 
 	/**
 	 * Class constructor.
@@ -34,7 +33,7 @@ class TrueLayer_Request_Create_Payment extends TrueLayer_Request {
 	public function __construct( $arguments ) {
 		parent::__construct( $arguments );
 		$this->log_title = 'Create payment';
-		$this->order_id  = $arguments['order_id'];
+		$this->order     = $arguments['order'];
 	}
 
 	/**
@@ -62,7 +61,7 @@ class TrueLayer_Request_Create_Payment extends TrueLayer_Request {
 	 * @throws Exception If the order ID is invalid.
 	 */
 	private function create_payment() {
-		$order = wc_get_order( $this->order_id );
+		$order = wc_get_order( $this->order );
 
 		if ( ! $order ) {
 			throw new Exception( 'Invalid order ID' );

@@ -12,18 +12,10 @@ use KrokedilTrueLayerDeps\TrueLayer\Interfaces\Payment\RefundFailedInterface;
  * Class TrueLayer_Request_Refunds
  */
 class TrueLayer_Request_Refunds extends TrueLayer_Request {
-
 	/**
-	 * WooCommerce Order ID
+	 * The WooCommerce order, order ID or WP_Post object.
 	 *
-	 * @var int
-	 */
-	public $order_id;
-
-	/**
-	 * The WooCommerce order.
-	 *
-	 * @var WC_Order
+	 * @var WC_Order|int|WP_Post
 	 */
 	public $order;
 
@@ -48,8 +40,7 @@ class TrueLayer_Request_Refunds extends TrueLayer_Request {
 	 */
 	public function __construct( $arguments ) {
 		parent::__construct( $arguments );
-		$this->order_id  = $arguments['order_id'];
-		$this->order     = wc_get_order( $this->order_id );
+		$this->order     = wc_get_order( $arguments['order'] );
 		$this->log_title = 'Refund payment';
 
 		$this->amount = intval( round( $arguments['amount'] * 100 ) );
@@ -80,7 +71,9 @@ class TrueLayer_Request_Refunds extends TrueLayer_Request {
 	 */
 	private function refund_payment() {
 		$payment_id = $this->order->get_transaction_id();
-		$reference  = ! empty( $this->reason ) ? $this->reason : __( 'Refund for order ', 'truelayer-for-woocommerce' ) . $this->order->get_order_number();
+		// translators: %s: order number.
+		$default_reason = sprintf( __( 'Refund for order %s', 'truelayer-for-woocommerce' ), $this->order->get_order_number() );
+		$reference      = ! empty( $this->reason ) ? $this->reason : $default_reason;
 
 		// Get the payment.
 		$payment = TrueLayer()->api->get_payment_status( $payment_id );
