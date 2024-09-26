@@ -1,9 +1,13 @@
 <?php
 /**
- * Krokedil Paynopva for WooCommerce request base class.
+ * Krokedil Truelayer for WooCommerce request base class.
  *
  * @package @package TrueLayer_For_WooCommerce/classes/requests/
  */
+
+use KrokedilTrueLayerDeps\Nyholm\Psr7\Factory\Psr17Factory;
+use KrokedilTrueLayerDeps\TrueLayer\Client;
+use KrokedilTrueLayerDeps\TrueLayer\Interfaces\Client\ClientInterface;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	// Exit if accessed indirectly.
@@ -64,6 +68,13 @@ abstract class TrueLayer_Request {
 	 */
 	protected $settings;
 
+	/**
+	 * The TrueLayer client.
+	 *
+	 * @var ClientInterface
+	 */
+	protected $client;
+
 
 	/**
 	 * Class constructor.
@@ -78,66 +89,12 @@ abstract class TrueLayer_Request {
 	}
 
 	/**
-	 * Get the API URL base.
-	 *
-	 * @return string
-	 */
-	public function get_api_url_base() {
-		return $this->is_test_mode() ? $this->test_api_url_base() : $this->api_url_base();
-	}
-
-	/**
-	 * Get the API URL base.
-	 *
-	 * @return string
-	 */
-	public function get_auth_api_url_base() {
-		return $this->is_test_mode() ? $this->auth_test_api_url_base() : $this->auth_api_url_base();
-	}
-
-	/**
 	 * Check for test mode.
 	 *
 	 * @return string
 	 */
 	protected function is_test_mode() {
 		return 'yes' === $this->settings['testmode'];
-	}
-
-	/**
-	 * API URL base.
-	 *
-	 * @return string
-	 */
-	private function api_url_base() {
-		return 'https://api.truelayer.com';
-	}
-
-	/**
-	 * Test environment API URL base.
-	 *
-	 * @return string
-	 */
-	private function test_api_url_base() {
-		return 'https://api.truelayer-sandbox.com';
-	}
-
-	/**
-	 * API URL base.
-	 *
-	 * @return string
-	 */
-	private function auth_api_url_base() {
-		return 'https://auth.truelayer.com';
-	}
-
-	/**
-	 * Test environment API URL base.
-	 *
-	 * @return string
-	 */
-	private function auth_test_api_url_base() {
-		return 'https://auth.truelayer-sandbox.com';
 	}
 
 	/**
@@ -186,6 +143,26 @@ abstract class TrueLayer_Request {
 	}
 
 	/**
+	 * Returns banking providers.
+	 *
+	 * @return array
+	 */
+	public function get_banking_providers() {
+		$banking_providers = empty( $this->settings['truelayer_banking_providers'] ) ? array( 'retail' ) : $this->settings['truelayer_banking_providers']; // Default from TrueLayer is retail only. @see https://docs.truelayer.com/reference/create-payment.
+		return array_map( 'strtolower', $banking_providers );
+	}
+
+	/**
+	 * Returns the release channel
+	 *
+	 * @return array
+	 */
+	public function get_release_channel() {
+		$release_channel = empty( $this->settings['truelayer_release_channel'] ) ? 'general_availability' : $this->settings['truelayer_release_channel']; // Default from TrueLayer is general_availability. @see https://docs.truelayer.com/reference/create-payment.
+		return $release_channel;
+	}
+
+	/**
 	 * Request headers.
 	 *
 	 * @param array $body The Request Body.
@@ -199,98 +176,28 @@ abstract class TrueLayer_Request {
 	}
 
 	/**
-	 * Get the user agent.
+	 * Get the Truelayer client.
 	 *
-	 * @return string
+	 * @return ClientInterface
 	 */
-	protected function get_user_agent() {
-		return 'WooCommerce: ' . WC()->version . ' - Plugin version: ' . TRUELAYER_WC_PLUGIN_VERSION . ' - PHP Version: ' . PHP_VERSION . ' - Krokedil';
+	protected function get_client() {
+		$client = Client::configure()
+			->clientId( $this->get_client_id() )
+			->clientSecret( $this->get_client_secret() )
+			->keyId( $this->get_certificate() )
+			->pem( $this->get_private_key() )
+			->useProduction( ! $this->is_test_mode() )
+			->httpClient( new TrueLayer_Http_Client( $this->log_title ) )
+			->httpRequestFactory( new Psr17Factory() )
+			->create();
+
+		return $client;
 	}
-
-	/**
-	 * Get the request args.
-	 *
-	 * @return array
-	 */
-	abstract protected function get_request_args();
-
-	/**
-	 * Get the request URL.
-	 *
-	 * @return string
-	 */
-	abstract protected function get_request_url();
 
 	/**
 	 * Make the request.
 	 *
-	 * @return bool|object
+	 * @return object|WP_Error
 	 */
-	public function request() {
-		$url  = $this->get_request_url();
-		$args = $this->get_request_args();
-
-		if ( ! $args ) {
-			return false;
-		}
-
-		$response = wp_remote_request( $url, $args );
-
-		return $this->process_response( $response, $args, $url );
-	}
-
-	/**
-	 * Processes the response checking for errors.
-	 *
-	 * @param object|WP_Error $response The response from the request.
-	 * @param array           $request_args The request args.
-	 * @param string          $request_url The request url.
-	 * @return array|WP_Error
-	 */
-	protected function process_response( $response, $request_args, $request_url ) {
-		$response_code = wp_remote_retrieve_response_code( $response );
-
-		if ( $response_code < 200 || $response_code > 299 ) {
-			$data          = 'URL: ' . $request_url . ' - ' . wp_json_encode( $request_args );
-			$error_message = '';
-
-			if ( null !== json_decode( $response['body'], true ) ) {
-				$errors = json_decode( $response['body'], true );
-
-				foreach ( $errors as $error ) {
-
-					$error_message .= ' ' . $error;
-				}
-			}
-
-			$code   = wp_remote_retrieve_response_code( $response );
-			$return = new WP_Error( $code, json_decode( $response['body'], true ), $data );
-		} else {
-			$return = json_decode( wp_remote_retrieve_body( $response ), true );
-		}
-
-		$this->log_response( $response, $request_args, $request_url );
-
-		return $return;
-	}
-
-	/**
-	 * Logs the response from the request.
-	 *
-	 * @param array|WP_Error $response The response from the request.
-	 * @param array           $request_args The request args.
-	 * @param string          $request_url The request URL.
-	 * @return void
-	 */
-	protected function log_response( $response, $request_args, $request_url ) {
-		$body        = json_decode( wp_remote_retrieve_body( $response ), true );
-		$id          = $body['id'] ?? null;
-		$method      = $this->method;
-		$code        = wp_remote_retrieve_response_code( $response );
-		$title       = $this->log_title;
-		$tl_trace_id = wp_remote_retrieve_header( $response, 'TL-Trace-Id' );
-
-		$log = TrueLayer_Logger::format_log( $id, $method, $title, $request_args, $response, $code, $request_url, $tl_trace_id );
-		TrueLayer_Logger::log( $log );
-	}
+	abstract public function request();
 }

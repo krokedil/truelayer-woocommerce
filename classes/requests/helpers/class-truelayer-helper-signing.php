@@ -9,11 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use TrueLayer\Signing\Signer;
-use Ramsey\Uuid\Uuid;
+use KrokedilTrueLayerDeps\TrueLayer\Signing\Signer;
+use KrokedilTrueLayerDeps\Ramsey\Uuid\Uuid;
 
 /**
- * Heler class for the request signing.
+ * Helper class for the request signing.
  */
 class Truelayer_Helper_Signing {
 	/**

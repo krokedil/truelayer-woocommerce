@@ -1,20 +1,30 @@
 {
     "require": {
-        "php": ">=7.4",
-        "truelayer/signing": "^0.1.0",
-        "defuse/php-encryption": "^2.3",
-        "ramsey/uuid": "^4.2"
+        "php": ">=8.1"
     },
     "config": {
         "platform": {
-            "php": "7.4"
+            "php": "8.1"
+        },
+        "allow-plugins": {
+            "php-http/discovery": false,
+            "wpify/scoper": true
         }
     },
     "require-dev": {
         "php-stubs/woocommerce-stubs": "^8.1",
-        "phpunit/phpunit": "^9.6"
+        "phpunit/phpunit": "^9.6",
+        "wpify/scoper": "^3.2"
+    },
+    "extra": {
+        "wpify-scoper": {
+            "prefix": "KrokedilTrueLayerDeps",
+            "folder": "dependencies",
+            "autorun": true
+        }
     },
     "scripts": {
-        "test": "phpunit --configuration phpunit.xml"
+        "test": "phpunit --configuration phpunit.xml",
+        "wpify-scoper": "wpify-scoper"
     }
 }

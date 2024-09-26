@@ -10,9 +10,11 @@
  * Domain Path: /languages
  *
  * WC requires at least: 6.0.0
- * WC tested up to: 9.2.0
+ * WC tested up to: 9.2.3
  *
- * Copyright (c) 2022-2023 Krokedil
+ * Requires Plugins: woocommerce
+ *
+ * Copyright (c) 2022-2024 Krokedil
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
@@ -115,7 +117,6 @@ if ( ! class_exists( 'TrueLayer_For_WooCommerce' ) ) {
 				return;
 			}
 
-
 			load_plugin_textdomain( 'truelayer-for-woocommerce', false, plugin_basename( __DIR__ ) . '/languages' );
 			add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'plugin_action_links' ) );
 			$this->include_files();
@@ -127,19 +128,19 @@ if ( ! class_exists( 'TrueLayer_For_WooCommerce' ) ) {
 		 * @return mixed
 		 */
 		public function init_composer() {
-			$autoloader = TRUELAYER_WC_PLUGIN_PATH . '/vendor/autoload.php';
+			$scoper_autoloader = TRUELAYER_WC_PLUGIN_PATH . '/dependencies/scoper-autoload.php';
 
-			if ( ! is_readable( $autoloader ) ) {
+			if ( ! is_readable( $scoper_autoloader ) ) {
 				self::missing_autoloader();
 				return false;
 			}
 
-			$autoloader_result = require $autoloader;
-			if ( ! $autoloader_result ) {
+			$scoper_autoloader_result = require $scoper_autoloader;
+			if ( ! $scoper_autoloader_result ) {
 				return false;
 			}
 
-			return $autoloader_result;
+			return $scoper_autoloader_result;
 		}
 
 		/**
@@ -162,7 +163,7 @@ if ( ! class_exists( 'TrueLayer_For_WooCommerce' ) ) {
 						<?php echo esc_html__( 'Your installation of TrueLayer for WooCommerce is not complete. If you installed this plugin directly from Github please refer to the readme.dev.txt file in the plugin.', 'truelayer-for-woocommerce' ); ?>
 					</p>
 				</div>
-				<?php
+					<?php
 				}
 			);
 		}
@@ -213,14 +214,11 @@ if ( ! class_exists( 'TrueLayer_For_WooCommerce' ) ) {
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/class-truelayer-fields.php';
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/class-truelayer-gateway.php';
 
+			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/psr/class-truelayer-http-client.php';
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/class-truelayer-request.php';
-			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/class-truelayer-request-post.php';
-			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/class-truelayer-request-get.php';
-			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/post/class-truelayer-request-get-token.php';
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/post/class-truelayer-request-create-payment.php';
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/get/class-truelayer-request-get-payment-status.php';
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/get/class-truelayer-get-merchant-accounts.php';
-
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/order_management/class-truelayer-request-refunds.php';
 
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/helpers/class-truelayer-helper-order.php';
@@ -245,7 +243,6 @@ if ( ! class_exists( 'TrueLayer_For_WooCommerce' ) ) {
 			$this->api     = new Truelayer_API();
 			$this->install = new TrueLayer_Install();
 		}
-
 	}
 	TrueLayer_For_WooCommerce::get_instance();
 }

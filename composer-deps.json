@@ -1,0 +1,20 @@
+{
+    "require": {
+        "php": ">=8.1",
+        "truelayer/client": "^2.1",
+        "defuse/php-encryption": "^2.3",
+        "ramsey/uuid": "^4.2",
+        "nyholm/psr7": "^1.8"
+    },
+    "config": {
+        "platform": {
+            "php": "8.1"
+        },
+        "allow-plugins": {
+            "php-http/discovery": false
+        }
+    },
+    "scripts": {
+        "test": "phpunit --configuration phpunit.xml"
+    }
+}

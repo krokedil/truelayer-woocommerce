@@ -16,7 +16,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return void
  */
 function truelayer_print_error_message( $wp_error ) {
-	wc_print_notice( $wp_error->get_error_message(), 'error' );
+	if ( is_ajax() ) {
+		wc_add_notice( $wp_error->get_error_message(), 'error' );
+	} else {
+		wc_print_notice( $wp_error->get_error_message(), 'error' );
+	}
 }
 
 /**
@@ -33,7 +37,6 @@ function truelayer_confirm_order( $order, $transaction_id ) {
 		$order->payment_complete( $transaction_id );
 		$order->add_order_note( __( 'Order successfully placed with TrueLayer. Payment transaction id:', 'truelayer-for-woocommerce' ) . ' ' . $transaction_id );
 	}
-
 }
 
 /**
