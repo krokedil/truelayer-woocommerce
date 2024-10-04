@@ -38,7 +38,7 @@ function truelayer_140_ensure_truelayer_key_exists() {
 		return;
 	}
 
-	Truelayer_Logger::log( 'TRUELAYER_KEY added to the wp-config.php file.' );
+	TrueLayer_Logger::log( 'TRUELAYER_KEY added to the wp-config.php file.' );
 	do_action( 'true_layer_key_set' );
 }
 
