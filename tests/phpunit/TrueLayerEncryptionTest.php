@@ -1,6 +1,6 @@
 <?php
-use Defuse\Crypto\Crypto;
-use Defuse\Crypto\Key;
+use KrokedilTrueLayerDeps\Defuse\Crypto\Crypto;
+use KrokedilTrueLayerDeps\Defuse\Crypto\Key;
 use PHPUnit\Framework\TestCase;
 
 global $settings;
