@@ -5,7 +5,7 @@
  * Description: TrueLayer for WooCommerce.
  * Author: Krokedil
  * Author URI: https://krokedil.com/
- * Version: 1.4.2
+ * Version: 2.0.0
  * Text Domain: truelayer-for-woocommerce
  * Domain Path: /languages
  *
@@ -29,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'TRUELAYER_WC_MAIN_FILE', __FILE__ );
 define( 'TRUELAYER_WC_PLUGIN_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 define( 'TRUELAYER_WC_PLUGIN_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) );
-define( 'TRUELAYER_WC_PLUGIN_VERSION', '1.4.2' );
+define( 'TRUELAYER_WC_PLUGIN_VERSION', '2.0.0' );
 
 if ( ! class_exists( 'TrueLayer_For_WooCommerce' ) ) {
 	/**
