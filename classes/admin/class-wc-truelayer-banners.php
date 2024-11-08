@@ -50,7 +50,8 @@ if ( ! class_exists( 'WC_TrueLayer_Banners' ) ) {
 					<code><?php echo esc_url( $callback_uri ); ?></code>
 				</p>
 				<p class="krokdocs-sidebar-main-text">
-					<strong>Please make sure that you have enabled pretty permalinks in your WordPress installation.</strong> Otherwise callbacks from TrueLayer back to your store won’t work and orders will not be updated with the correct order status/information.
+					<strong>Please make sure that you have enabled pretty permalinks in your WordPress installation.</strong> Otherwise callbacks from TrueLayer back to your store won’t work and orders will not be updated with the correct order status/information.<br>
+					<a href="https://wordpress.org/documentation/article/customize-permalinks/#pretty-permalinks" target="_blank">What is pretty permalinks?</a>
 				</p>
 				<h3 class="krokdocs-sidebar-title">Support</h3>
 				<p class="krokdocs-sidebar-main-text">
