@@ -25,7 +25,7 @@
 }
 
 #krokdocs-sidebar-bottom-holder {
-    padding: 5px 10px 10px 10px;
+    padding: 5px 0 0 0;
     margin-top: 10px;
     align-self: flex-end;
     flex-direction: column;
