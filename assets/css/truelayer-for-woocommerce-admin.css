@@ -13,7 +13,7 @@
 }
 
 #krokdocs-text-container{
-    padding: 1em;
+    padding: 2em;
     border: 1px solid #ccc;
     width:  350px;
     background-color: #f5f5f5;
@@ -21,11 +21,11 @@
 
 .krokdocs-sidebar-title {
     font-size:1.3em;
-    margin-bottom: 0.5em;
+    margin: 0 0 0.5em 0;
 }
 
 #krokdocs-sidebar-bottom-holder {
-    padding: 5px 10px 10px 10px;
+    padding: 5px 0 0 0;
     margin-top: 10px;
     align-self: flex-end;
     flex-direction: column;
