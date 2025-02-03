@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PLUGIN_SLUG: truelayer-woocommerce
+      PLUGIN_SLUG: truelayer-for-woocommerce
 
     steps:
     - name: Checkout repository
