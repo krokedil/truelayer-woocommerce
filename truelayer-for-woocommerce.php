@@ -222,7 +222,6 @@ if ( ! class_exists( 'TrueLayer_For_WooCommerce' ) ) {
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/order_management/class-truelayer-request-refunds.php';
 
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/helpers/class-truelayer-helper-order.php';
-			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/helpers/class-truelayer-helper-signing.php';
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/helpers/class-truelayer-helper-verifying.php';
 			include_once TRUELAYER_WC_PLUGIN_PATH . '/classes/requests/helpers/class-truelayer-helper-hosted-payment-page-url.php';
 
