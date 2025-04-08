@@ -168,10 +168,10 @@ class TrueLayer_Payment_Gateway extends WC_Payment_Gateway {
 
 		$order->update_meta_data( '_truelayer_payment_id', $payment->getId() );
 		$order->update_meta_data( '_truelayer_payment_token', $payment->getResourceToken() );
-
-		$build_test_url = Truelayer_Helper_Hosted_Payment_Page_URL::build_hosted_payment_page_url( $order );
-
 		$order->save();
+
+		$return_url     = home_url( '/wc-api/TrueLayer_Redirect/' );
+		$build_test_url = $payment->hostedPaymentsPage()->returnUri( $return_url )->toUrl();
 
 		if ( 'EPP' === $epp_enabled ) {
 			$url = add_query_arg(
