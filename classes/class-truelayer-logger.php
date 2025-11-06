@@ -23,7 +23,7 @@ class TrueLayer_Logger {
 	/**
 	 * Logs an event.
 	 *
-	 * @param string $data The data string.
+	 * @param array|string $data The data string.
 	 */
 	public static function log( $data ) {
 		$settings = get_option( 'woocommerce_truelayer_settings' );
@@ -44,11 +44,11 @@ class TrueLayer_Logger {
 	/**
 	 * Formats the log data to prevent json error.
 	 *
-	 * @param string $data Json string of data.
+	 * @param array|string $data Json string of data.
 	 * @return array
 	 */
 	public static function format_data( $data ) {
-		if ( isset( $data['request']['body'] ) ) {
+		if ( is_array( $data ) && isset( $data['request']['body'] ) ) {
 			$data['request']['body'] = json_decode( $data['request']['body'], true );
 		}
 		return $data;

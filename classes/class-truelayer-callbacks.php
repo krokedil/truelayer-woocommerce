@@ -42,7 +42,7 @@ class TrueLayer_Callbacks {
 		$headers = truelayer_get_all_headers( $_SERVER );
 
 		$log_id = isset( $body['payment_id'] ) ? $body['payment_id'] : $body['beneficiary']['payment_source_id'];
-		TrueLayer_Logger::log( TrueLayer_Logger::format_log( $log_id, 'WEBHOOK CALLBACK', $body['type'], wp_parse_url( untrailingslashit( home_url( '/wc-api/TrueLayer_Callback' ) ), PHP_URL_PATH ), wp_json_encode( $body ), '200' ) );
+		TrueLayer_Logger::log( TrueLayer_Logger::format_log( $log_id, 'WEBHOOK CALLBACK', $body['type'], wp_parse_url( untrailingslashit( home_url( '/wc-api/TrueLayer_Callback' ) ), PHP_URL_PATH ), $body, '200' ) );
 
 		// Make sure we have a payment_id.
 		if ( empty( $body['payment_id'] ) && empty( $body['beneficiary']['payment_source_id'] ) ) {
@@ -52,12 +52,12 @@ class TrueLayer_Callbacks {
 
 		// Make sure verification is ok.
 		try {
-			$verification = Truelayer_Helper_Verifying::get_tl_verification( $unsafe_body, $headers );
+			Truelayer_Helper_Verifying::get_tl_verification( $unsafe_body, $headers );
 		} catch ( Exception $e ) {
 			TrueLayer_Logger::log( sprintf( 'WEBHOOK CALLBACK ERROR [verification]. Trying again with a path where we do not try to remove trailing slash.', $e->getMessage() ) );
 			// Try again. This time by passing a third param to get_tl_verification that doesn't try to remove a trailing slash from the path.
 			try {
-				$verification = Truelayer_Helper_Verifying::get_tl_verification( $unsafe_body, $headers, false );
+				Truelayer_Helper_Verifying::get_tl_verification( $unsafe_body, $headers, false );
 			} catch ( Exception $e ) {
 				TrueLayer_Logger::log( sprintf( 'WEBHOOK CALLBACK ERROR [verification]: %s', $e->getMessage() ) );
 				return;
@@ -109,7 +109,7 @@ class TrueLayer_Callbacks {
 
 		// Bail if we don't have an order.
 		if ( ! is_object( $order ) ) {
-			return;
+			return false;
 		}
 
 		$order_id = $order->get_id();
@@ -128,7 +128,7 @@ class TrueLayer_Callbacks {
 					break;
 
 				default:
-					$note = __( 'TrueLayer payment failed: unkown event.', 'truelayer-for-woocommerce' );
+					$note = __( 'TrueLayer payment failed: unknown event.', 'truelayer-for-woocommerce' );
 					break;
 			}
 			TrueLayer_Logger::log( sprintf( 'RETURN ERROR [%s]: %s WC Order id is: %s.', $body['failure_reason'], $note, $order_id ) );
@@ -154,7 +154,7 @@ class TrueLayer_Callbacks {
 
 		// Bail if we don't have an order.
 		if ( ! is_object( $order ) ) {
-			return;
+			return false;
 		}
 
 		$order_id = $order->get_id();
@@ -184,7 +184,7 @@ class TrueLayer_Callbacks {
 	 *
 	 * @param array $body The information returned in the webhook from TrueLayer.
 	 *
-	 * @return bool
+	 * @return void
 	 */
 	public function handle_payment_failed( $body ) {
 
@@ -211,7 +211,7 @@ class TrueLayer_Callbacks {
 					break;
 
 				default:
-					$note = __( 'TrueLayer payment failed: unkown event.', 'truelayer-for-woocommerce' );
+					$note = __( 'TrueLayer payment failed: unknown event.', 'truelayer-for-woocommerce' );
 					break;
 			}
 			$order->set_status( 'failed', $note );
@@ -232,7 +232,7 @@ class TrueLayer_Callbacks {
 
 		// Bail if we don't have an order.
 		if ( ! is_object( $order ) ) {
-			return;
+			return false;
 		}
 
 		$order_id = $order->get_id();
@@ -268,7 +268,7 @@ class TrueLayer_Callbacks {
 
 		// Bail if we don't have an order.
 		if ( ! is_object( $order ) ) {
-			return;
+			return false;
 		}
 
 		$order_id = $order->get_id();
@@ -281,6 +281,8 @@ class TrueLayer_Callbacks {
 			$order->set_status( 'on-hold', $note );
 			$order->save();
 		}
+
+		return true;
 	}
 
 	/**
@@ -296,7 +298,7 @@ class TrueLayer_Callbacks {
 
 		// Bail if we don't have an order.
 		if ( ! is_object( $order ) ) {
-			return;
+			return false;
 		}
 
 		$order_id = $order->get_id();
@@ -332,7 +334,7 @@ class TrueLayer_Callbacks {
 
 		// Bail if we don't have an order.
 		if ( ! is_object( $order ) ) {
-			return;
+			return false;
 		}
 
 		$order_id = $order->get_id();
@@ -345,6 +347,8 @@ class TrueLayer_Callbacks {
 			$order->set_status( 'on-hold', $note );
 			$order->save();
 		}
+
+		return true;
 	}
 
 	/**
@@ -352,7 +356,7 @@ class TrueLayer_Callbacks {
 	 *
 	 * @param string $payment_id The payment id from TrueLayer.
 	 *
-	 * @return object
+	 * @return WC_Order|bool
 	 */
 	public function get_woocommerce_order_from_payment_id( $payment_id ) {
 
@@ -379,7 +383,14 @@ class TrueLayer_Callbacks {
 
 		// Set the order from the first order id returned.
 		$order_id = $orders[0];
-		return wc_get_order( $order_id );
+		$order = wc_get_order( $order_id );
+
+		if ( $payment_id !== $order->get_meta( '_truelayer_payment_id' ) ) {
+			TrueLayer_Logger::log( sprintf( 'WEBHOOK CALLBACK ERROR [orders]: Callback could not obtain the WooCommerce order ID with a matching payment id.' ) );
+			return false;
+		}
+
+		return $order;
 	}
 
 	/**
@@ -387,7 +398,7 @@ class TrueLayer_Callbacks {
 	 *
 	 * @param string $payment_source_id The payment source id from TrueLayer.
 	 *
-	 * @return object
+	 * @return WC_Order|bool
 	 */
 	public function get_woocommerce_order_from_payment_source_id( $payment_source_id ) {
 
@@ -414,7 +425,14 @@ class TrueLayer_Callbacks {
 
 		// Set the order from the first order id returned.
 		$order_id = $orders[0];
-		return wc_get_order( $order_id );
+		$order = wc_get_order( $order_id );
+
+		if ( $payment_source_id !== $order->get_meta( '_truelayer_payment_source_id' ) ) {
+			TrueLayer_Logger::log( sprintf( 'WEBHOOK CALLBACK ERROR [orders]: Callback could not obtain the WooCommerce order ID with a matching payment source id.' ) );
+			return false;
+		}
+
+		return $order;
 	}
 
 	/**
@@ -422,7 +440,7 @@ class TrueLayer_Callbacks {
 	 *
 	 * @param string $transaction_id The transaction id from TrueLayer.
 	 *
-	 * @return object
+	 * @return WC_Order|bool
 	 */
 	public function get_woocommerce_order_from_transaction_id( $transaction_id ) {
 
@@ -449,7 +467,14 @@ class TrueLayer_Callbacks {
 
 		// Set the order from the first order id returned.
 		$order_id = $orders[0];
-		return wc_get_order( $order_id );
+		$order    = wc_get_order( $order_id );
+
+		if ( $transaction_id !== $order->get_transaction_id() ) {
+			TrueLayer_Logger::log( sprintf( 'WEBHOOK CALLBACK ERROR [orders]: Callback could not obtain the WooCommerce order ID with a matching transaction id.' ) );
+			return false;
+		}
+
+		return $order;
 	}
 
 } new TrueLayer_Callbacks();

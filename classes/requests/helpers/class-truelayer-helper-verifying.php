@@ -19,11 +19,11 @@ class Truelayer_Helper_Verifying {
 	/**
 	 * Get the Tl Signature for the requests.
 	 *
-	 * @param array $body The request body.
+	 * @param string $body The request body as a string.
 	 * @param array $headers The callback headers.
 	 * @param bool  $path_remove_trailing_slash if path should be run through untrailingslashit() or not.
 	 * @throws InvalidSignatureException $e The error message if verification fails.
-	 * @return string
+	 * @return void
 	 */
 	public static function get_tl_verification( $body, $headers, $path_remove_trailing_slash = true ) {
 		$tl_signature        = $headers['tl-signature'];
@@ -48,12 +48,10 @@ class Truelayer_Helper_Verifying {
 			->body( $body );
 
 		try {
-
-			$verification = $verifier->verify( $tl_signature );
+			$verifier->verify( $tl_signature );
 		} catch ( Exception $e ) {
 			throw $e;
 		}
-		return $verification;
 	}
 
 	/**

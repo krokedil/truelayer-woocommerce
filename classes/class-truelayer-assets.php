@@ -27,7 +27,7 @@ class TrueLayer_Assets {
 	public function __construct() {
 		add_action( 'admin_enqueue_scripts', array( $this, 'truelayer_load_admin_js' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'truelayer_load_admin_css' ) );
-                add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+        add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 	}
 
 	/**

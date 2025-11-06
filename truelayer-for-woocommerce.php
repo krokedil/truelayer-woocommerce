@@ -78,7 +78,7 @@ if ( ! class_exists( 'TrueLayer_For_WooCommerce' ) ) {
 		 * @return void
 		 */
 		public function __clone() {
-			wc_doing_it_wrong( __FUNCTION__, __( 'Nope' ), '1.0' );
+			wc_doing_it_wrong( __FUNCTION__, 'Nope', '1.0' );
 		}
 
 		/**
@@ -87,7 +87,7 @@ if ( ! class_exists( 'TrueLayer_For_WooCommerce' ) ) {
 		 * @return void
 		 */
 		public function __wakeup() {
-			wc_doing_it_wrong( __FUNCTION__, __( 'Nope' ), '1.0' );
+			wc_doing_it_wrong( __FUNCTION__, 'Nope', '1.0' );
 		}
 
 		/**
@@ -128,19 +128,21 @@ if ( ! class_exists( 'TrueLayer_For_WooCommerce' ) ) {
 		 * @return mixed
 		 */
 		public function init_composer() {
+			$autoloader        = TRUELAYER_WC_PLUGIN_PATH . '/vendor/autoload.php';
 			$scoper_autoloader = TRUELAYER_WC_PLUGIN_PATH . '/dependencies/scoper-autoload.php';
 
-			if ( ! is_readable( $scoper_autoloader ) ) {
+			if ( ! is_readable( $scoper_autoloader ) || ! is_readable( $autoloader ) ) {
 				self::missing_autoloader();
 				return false;
 			}
 
+			$autoloader_result = require $autoloader;
 			$scoper_autoloader_result = require $scoper_autoloader;
-			if ( ! $scoper_autoloader_result ) {
+			if ( ! $scoper_autoloader_result || ! $autoloader_result  ) {
 				return false;
 			}
 
-			return $scoper_autoloader_result;
+			return $scoper_autoloader_result && $autoloader_result;
 		}
 
 		/**

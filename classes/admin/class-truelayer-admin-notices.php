@@ -1,4 +1,7 @@
 <?php
+
+use KrokedilTrueLayerDeps\Defuse\Crypto\Key;
+
 /**
  * Admin notice class file.
  *
@@ -8,8 +11,6 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
-use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
-use Defuse\Crypto\Key;
 
 /**
  * Returns error messages depending on
