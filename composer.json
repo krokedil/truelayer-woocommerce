@@ -11,6 +11,11 @@
             "wpify/scoper": true
         }
     },
+    "autoload": {
+        "psr-4": {
+            "Krokedil\\TrueLayer\\": "src/"
+        }
+    },
     "require-dev": {
         "php-stubs/woocommerce-stubs": "^8.1",
         "phpunit/phpunit": "^9.6",
