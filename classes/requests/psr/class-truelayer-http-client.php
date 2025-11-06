@@ -5,6 +5,8 @@
  * @package TrueLayer_For_WooCommerce/classes/requests/psr
  */
 
+use Krokedil\TrueLayer\Exception\ClientException;
+use Krokedil\TrueLayer\Exception\NetworkException;
 use KrokedilTrueLayerDeps\Nyholm\Psr7\Response;
 use KrokedilTrueLayerDeps\Psr\Http\Client\ClientInterface;
 use KrokedilTrueLayerDeps\Psr\Http\Message\RequestInterface;
@@ -58,6 +60,11 @@ class TrueLayer_Http_Client implements ClientInterface {
 		// Make the request.
 		$response = wp_remote_request( $uri, $args );
 
+		// If we get a WP_Error, we need to throw a NetworkException exception.
+		if ( is_wp_error( $response ) ) {
+			throw new NetworkException( $response, $request );
+		}
+
 		// Create the PSR-7 response.
 		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_headers = wp_remote_retrieve_headers( $response );
@@ -65,17 +72,25 @@ class TrueLayer_Http_Client implements ClientInterface {
 		$response_body    = wp_remote_retrieve_body( $response );
 
 		// Ensure the response code is numeric.
-		$response_code = is_numeric( $response_code ) ? (int) $response_code : 400;
+		$response_code = is_numeric( $response_code ) ? (int) $response_code : null;
 
 		// Format the headers to ensure they are an array.
 		$response_headers = is_array( $response_headers ) ? $response_headers : iterator_to_array( $response_headers );
 
-		// Create the PSR-7 response.
-		$response = new Response( $response_code, $response_headers, $response_body, $http_version, $response_reason );
+		// If we could not get a response code or any response headers, throw a ClientException.
+		if ( null === $response_code || empty( $response_headers ) ) {
+			throw new ClientException( $request, 'Invalid response from server.', 500 );
+		}
 
+		// Log the request and response.
 		$this->logRequest( $uri, $args, $response_body, $response_code );
-
-		return $response;
+		try {
+			// Create the PSR-7 response and return it.
+			return new Response( $response_code, $response_headers, $response_body, $http_version, $response_reason );
+		} catch ( Exception $e ) {
+			// If the Response object could not be created, throw a client exception.
+			throw new ClientException( $request, 'Failed to parse response', $e->getCode(), $e );
+		}
 	}
 
 	/**
@@ -96,10 +111,13 @@ class TrueLayer_Http_Client implements ClientInterface {
 
 		// Add the request body if it is set.
 		if ( $request->getBody()->getSize() > 0 ) {
+			$args['body'] = (string) $request->getBody();
+			/*
 			$body = json_decode( (string) $request->getBody(), true );
 			if ( ! empty( $body ) ) {
 				$args['body'] = apply_filters( 'truelayer_request_args', (string) wp_json_encode( $body ) );
 			}
+			*/
 		}
 
 		return $args;
