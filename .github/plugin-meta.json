@@ -5,7 +5,7 @@
         "url": "/wp-admin/admin.php?page=wc-settings&tab=checkout&section=truelayer",
         "assertions": [
           {
-            "selector": "h2.wc-admin-header",
+            "selector": "#mainform",
             "text": "TrueLayer",
             "match": "contains"
           }
